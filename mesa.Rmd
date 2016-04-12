@@ -1,0 +1,52 @@
+---
+title: "MESA_Study_Karthik"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+##Hypothesis
+BMI and heart disease are directly corelated as in with an increase in BMI the probability of getting heart disease increases.
+
+##Methods
+I considered two variables bmi1c and rheuhv1. To begin with I used a t test on two groups - one with rheumatic heart disease and the other without and checked to see if the difference in values was corelated. It turns out that the BMI among patients with heart disease was higher than without.
+
+
+```{r}
+newdata <- read.csv("/home/prime/Downloads/Lecture_2-dataset.csv")
+dataset <- subset(newdata, rheuhv1!=9  )
+dim(dataset)
+dataset$rheuhv1 <- factor(dataset$rheuhv1)
+dataset.nohd <- subset(dataset, rheuhv1 == 0)
+dataset.hd <- subset(dataset, rheuhv1 == 1)
+plot(dataset$rheuhv1, dataset$bmi1c, xlab="Rheumatic heart disease", ylab="BMI")
+t.test(dataset.nohd$bmi1c, dataset.hd$bmi1c)
+```
+
+##Training - First 5000 rows
+##Testing - Rows from 5001 to 6300
+
+```{r}
+t.test(dataset.nohd[1:5000,]$bmi1c, dataset.hd[1:5000,]$bmi1c)
+plot(dataset[1:5000,]$rheuhv1, dataset[1:5000,]$bmi1c, xlab="Rheumatic heart disease", ylab="BMI")
+training <- dataset[1:5000,]
+testing <- dataset[5000:6300,]
+logit <- glm(rheuhv1 ~ bmi1c, data = training, family=binomial )
+summary(logit)
+testing$prob <- predict(logit, testing, type="response")
+```
+
+##Plotting Rheumatic heart disease vs BMI (Testing set)
+```{r}
+qplot(x = bmi1c, y = rheuhv1, data = testing)
+```
+
+##Plotting Predicted Probability of Heart Disease on testing set vs BMI
+
+```{r}
+qplot(x = bmi1c, y = prob, data = testing)
+```
+

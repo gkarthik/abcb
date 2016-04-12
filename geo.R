@@ -15,7 +15,6 @@ selectedProbeIDs[2] = "100128434_TGI_at"
 naProbeSets <- apply(dat, 1, function(x) {sum(is.na(x))})
 sum(naProbeSets != 0)
 datNoNa <- dat[naProbeSets == 0, ]
-dim(datNoNa)
 df <- as.data.frame(datNoNa)
 diffExpP <- c()
 diffExpP = apply(df,1,function(x){
