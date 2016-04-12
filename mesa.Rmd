@@ -12,7 +12,10 @@ library(ggplot2)
 BMI and heart disease are directly corelated as in with an increase in BMI the probability of getting heart disease increases.
 
 ##Methods
-I considered two variables bmi1c and rheuhv1. To begin with I used a t test on two groups - one with rheumatic heart disease and the other without and checked to see if the difference in values was corelated. It turns out that the BMI among patients with heart disease was higher than without.
+I considered two variables bmi1c(BMI) and rheuhv1(Rheumatic heart disease). "rheuhv1" is a categorical viriable with 0 signifying no heart diease, 1 signifying the presence of heart diease and 9 signifying that the data is unavailable. To begin with I removed all patients with a value "9"(unavailable). I used a t test on two groups - one with rheumatic heart disease and the other without and checked to see if the difference in BMI was corelated. It turns out that the BMI among patients with heart disease was higher than the ones without. This was also significant with a p value of 0.002892(considering a threshold of 0.05). Following that I split the dataset into a training(1-5000 rows) and testing set(5001 - 6300). I redid the t test on the training set and the group without heart disease had a higher BMI with a p value of 0.04141. Following this I wanted to see how increasing BMI would change the probability of getting heart disease. After generating a logistic regression model using the training set, I could see that an increase of 1 unit of BMI would decrease the log odds of getting heart disease by 0.04716. The BMI factor was significant with a p value of 0.0146 in the generated model. I also plotted the predicted probabilities using the model on the test set to test the model. As expected the model was negatively corelated. 
+
+##Results
+The significance of the t tests and the regression model show that the hypothesis that I had stipulated was wrong. The plots show a negative corelation between BMI and heart diease but a simple calculation of effect size using Cohen's d gives 0.2394963. This shows that the difference in BMI is too small to affirm the corelation.
 
 
 ```{r}
@@ -48,5 +51,20 @@ qplot(x = bmi1c, y = rheuhv1, data = testing)
 
 ```{r}
 qplot(x = bmi1c, y = prob, data = testing)
+```
+
+```{r}
+cohens_d <- function(x, y) {
+    lx <- length(x)- 1
+    ly <- length(y)- 1
+    md  <- abs(mean(x) - mean(y))        ## mean difference (numerator)
+    csd <- lx * var(x) + ly * var(y)
+    csd <- csd/(lx + ly)
+    csd <- sqrt(csd)                     ## common sd computation
+
+    cd  <- md/csd                        ## cohen's d
+}
+res <- cohens_d(dataset.hd$bmi1c, dataset.nohd$bmi1c)
+res
 ```
 
